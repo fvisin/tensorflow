@@ -1094,6 +1094,7 @@ class Conv2DTranspose(Conv2D):
 
   def __init__(self, filters,
                kernel_size,
+               output_shape=None,
                strides=(1, 1),
                padding='valid',
                data_format='channels_last',
@@ -1107,6 +1108,7 @@ class Conv2DTranspose(Conv2D):
                trainable=True,
                name=None,
                **kwargs):
+    self.output_shape = output_shape
     super(Conv2DTranspose, self).__init__(
         filters,
         kernel_size,
@@ -1170,15 +1172,18 @@ class Conv2DTranspose(Conv2D):
     kernel_h, kernel_w = self.kernel_size
     stride_h, stride_w = self.strides
 
-    # Infer the dynamic output shape:
-    out_height = utils.deconv_output_length(height,
-                                            kernel_h,
-                                            self.padding,
-                                            stride_h)
-    out_width = utils.deconv_output_length(width,
-                                           kernel_w,
-                                           self.padding,
-                                           stride_w)
+    if self.output_shape is None:
+      # Infer the dynamic output shape:
+      out_height = utils.deconv_output_length(height,
+                                              kernel_h,
+                                              self.padding,
+                                              stride_h)
+      out_width = utils.deconv_output_length(width,
+                                             kernel_w,
+                                             self.padding,
+                                             stride_w)
+    else:
+      out_height, out_width = self.output_shape
     if self.data_format == 'channels_first':
       output_shape = (batch_size, self.filters, out_height, out_width)
       strides = (1, 1, stride_h, stride_w)
@@ -1240,6 +1245,7 @@ class Conv2DTranspose(Conv2D):
 def conv2d_transpose(inputs,
                      filters,
                      kernel_size,
+                     output_shape=None,
                      strides=(1, 1),
                      padding='valid',
                      data_format='channels_last',
@@ -1557,6 +1563,7 @@ def conv3d_transpose(inputs,
   layer = Conv3DTranspose(
       filters=filters,
       kernel_size=kernel_size,
+      output_shape=output_shape,
       strides=strides,
       padding=padding,
       data_format=data_format,
