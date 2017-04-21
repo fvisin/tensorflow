@@ -1203,17 +1203,20 @@ class Conv2DTranspose(Conv2D):
     # Infer the static output shape:
     out_shape = inputs.get_shape().as_list()
     out_shape[c_axis] = self.filters
-    if self.output_shape is None or isinstance(self.output_shape, ops.Tensor):
-      out_shape[h_axis] = utils.deconv_output_length(out_shape[h_axis],
-                                                     kernel_h,
-                                                     self.padding,
-                                                     stride_h)
-      out_shape[w_axis] = utils.deconv_output_length(out_shape[w_axis],
-                                                     kernel_w,
-                                                     self.padding,
-                                                     stride_w)
+    if (self.output_shape is None or
+        isinstance(self.output_shape[0], ops.Tensor)):
+      out_shape[h_axis] = utils.deconv_output_length(
+        out_shape[h_axis], kernel_h, self.padding, stride_h)
     else:
-      out_shape[h_axis], out_shape[w_axis] = self.output_shape
+      out_shape[h_axis] = self.output_shape[0]
+
+    if (self.output_shape is None or
+        isinstance(self.output_shape[1], ops.Tensor)):
+      out_shape[w_axis] = utils.deconv_output_length(
+        out_shape[w_axis], kernel_w, self.padding, stride_w)
+    else:
+      out_shape[w_axis] = self.output_shape[1]
+
     outputs.set_shape(out_shape)
 
     if self.bias:
