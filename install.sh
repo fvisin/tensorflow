@@ -22,7 +22,7 @@ if [[ `hostname` == 'nvidia-robotica' ]] ; then
     echo -e "\t-march=native -mfma -mfpmath=both -msse4.2"
     echo -e "\t5.2" 
 elif [[ `hostname` == 'fraptop' ]] ; then
-    echo -e "\t-march=native -mfpmath=both -msse4.2"
+    echo -e "\t-march=native -msse4.2"
 elif [[ `hostname -d` == 'iro.umontreal.ca' ]] ; then
     echo -e "\t-march=native -mfpmath=both -msse4.2 -mavx" # -mavx2 -mfma
 elif [[ `hostname` == 'AITeam' ]] ; then
